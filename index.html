@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mi semana integral 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface2: #f0ede6;
+  --text: #1a1814;
+  --text2: #6b6760;
+  --text3: #9b9890;
+  --border: rgba(26,24,20,0.12);
+  --border2: rgba(26,24,20,0.22);
+  --accent: #2d5a3d;
+  --accent-light: #e8f0eb;
+  --accent-text: #1a3a25;
+  --blue: #1d4e89;
+  --amber: #8a5a1a;
+  --amber-light: #faf0e0;
+  --red: #8a2020;
+  --red-light: #f6e8e8;
+  --r: 10px;
+  --r-lg: 16px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+h1, .day-name { font-family: 'DM Serif Display', serif; }
+
+.page { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+.header { margin-bottom: 2rem; }
+.header h1 { font-size: 2.8rem; line-height: 1.1; margin-bottom: 0.5rem; }
+.header p { font-size: 15px; color: var(--text2); max-width: 500px; }
+
+.top-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.week-input { flex: 1; min-width: 200px; font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 9px 14px; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface); color: var(--text); }
+.week-input:focus { outline: none; border-color: var(--accent); }
+.btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 9px 16px; border: 1px solid var(--border2); border-radius: var(--r); background: var(--surface); color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; transition: background 0.15s; }
+.btn:hover { background: var(--surface2); }
+.btn.danger { color: var(--red); border-color: rgba(138,32,32,0.2); }
+.btn.danger:hover { background: var(--red-light); }
+
+/* Progress */
+.progress-card { background: var(--accent); color: white; border-radius: var(--r-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+.pct-big { font-family: 'DM Serif Display', serif; font-size: 3rem; line-height: 1; min-width: 80px; }
+.bar-section { flex: 1; }
+.bar-bg { background: rgba(255,255,255,0.25); border-radius: 99px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+.bar-fill { height: 100%; border-radius: 99px; background: white; transition: width 0.4s ease; }
+.bar-label { font-size: 13px; opacity: 0.85; }
+
+/* Area grid */
+.area-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 1.5rem; }
+.area-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; }
+.area-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.area-count { font-size: 18px; font-weight: 500; }
+.area-bar { height: 3px; background: var(--border); border-radius: 99px; margin-top: 6px; overflow: hidden; }
+.area-bar-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s; }
+
+/* AI */
+.ai-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+.ai-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+.quick-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.qbtn { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border: 1px solid var(--border2); border-radius: 99px; background: var(--surface2); color: var(--text2); cursor: pointer; transition: all 0.15s; }
+.qbtn:hover { background: var(--accent-light); color: var(--accent-text); border-color: var(--accent); }
+.chat-history { max-height: 300px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+.chat-msg { font-size: 14px; line-height: 1.65; padding: 10px 14px; border-radius: var(--r); max-width: 90%; }
+.chat-msg.user { background: var(--surface2); align-self: flex-end; }
+.chat-msg.ai { background: var(--accent-light); color: var(--accent-text); align-self: flex-start; border-left: 3px solid var(--accent); }
+.chat-msg.loading { opacity: 0.6; font-style: italic; }
+.chat-input-row { display: flex; gap: 8px; }
+.chat-input { flex: 1; font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 9px 14px; border: 1px solid var(--border2); border-radius: var(--r); background: var(--bg); color: var(--text); }
+.chat-input:focus { outline: none; border-color: var(--accent); }
+.send-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 9px 18px; border: none; border-radius: var(--r); background: var(--accent); color: white; cursor: pointer; }
+.send-btn:hover { opacity: 0.85; }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Days */
+.days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-bottom: 1.5rem; }
+.day-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 1.1rem 1.2rem; }
+.day-card.lun,.day-card.mie,.day-card.vie { border-top: 3px solid var(--blue); }
+.day-card.mar,.day-card.jue { border-top: 3px solid var(--accent); }
+.day-card.sab { border-top: 3px solid var(--amber); }
+.day-card.dom { border-top: 3px solid var(--red); }
+.day-name { font-size: 1.3rem; margin-bottom: 2px; }
+.day-focus { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
+
+/* ── TASK NORMAL ── */
+.task-wrap { position: relative; margin-bottom: 6px; }
+.task-wrap:hover .task-actions { opacity: 1; }
+
+.task { display: flex; gap: 8px; align-items: flex-start; background: var(--bg); border-radius: var(--r); padding: 8px 10px; padding-right: 56px; cursor: pointer; border: 1px solid transparent; transition: background 0.15s; }
+.task:hover { background: var(--surface2); }
+.task.done { opacity: 0.42; }
+
+.task-check { width: 18px; height: 18px; border: 1.5px solid var(--border2); border-radius: 5px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.15s; }
+.task.done .task-check { background: var(--accent); border-color: var(--accent); color: white; }
+.task-body { flex: 1; }
+.task-lbl { font-size: 13px; line-height: 1.45; }
+.task.done .task-lbl { text-decoration: line-through; }
+.task-area { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+/* action buttons that appear on hover */
+.task-actions { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; gap: 3px; opacity: 0; transition: opacity 0.15s; }
+.act-btn { width: 24px; height: 24px; border-radius: 5px; border: 1px solid var(--border); background: var(--surface); color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; }
+.act-btn:hover.edit-t { background: var(--amber-light); color: var(--amber); border-color: rgba(138,90,26,.3); }
+.act-btn:hover.del-t { background: var(--red-light); color: var(--red); border-color: rgba(138,32,32,.25); }
+
+/* ── TASK EDITING (inline) ── */
+.task-editing { background: var(--bg); border: 1px solid var(--border2); border-radius: var(--r); padding: 8px 10px; margin-bottom: 6px; }
+.te-input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 6px 9px; border: 1px solid var(--border2); border-radius: 6px; background: var(--surface); color: var(--text); margin-bottom: 6px; }
+.te-input:focus { outline: none; border-color: var(--accent); }
+.te-row { display: flex; gap: 6px; align-items: center; }
+.te-sel { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 8px; border: 1px solid var(--border2); border-radius: 6px; background: var(--surface); color: var(--text); flex: 1; }
+.te-sel:focus { outline: none; border-color: var(--accent); }
+.te-save { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border: none; border-radius: 6px; background: var(--accent); color: white; cursor: pointer; font-weight: 500; }
+.te-save:hover { opacity: 0.85; }
+.te-cancel { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text2); cursor: pointer; }
+.te-cancel:hover { background: var(--surface2); }
+
+/* ── ADD TASK ROW ── */
+.add-task-row { display: flex; gap: 6px; margin-top: 8px; }
+.add-task-input { flex: 1; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 7px 10px; border: 1px dashed var(--border2); border-radius: var(--r); background: transparent; color: var(--text); }
+.add-task-input:focus { outline: none; border-style: solid; border-color: var(--accent); background: var(--surface); }
+.add-task-input::placeholder { color: var(--text3); }
+.add-task-btn { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 7px 13px; border: 1px dashed var(--border2); border-radius: var(--r); background: transparent; color: var(--accent); cursor: pointer; font-weight: 500; transition: all 0.15s; white-space: nowrap; }
+.add-task-btn:hover { background: var(--accent-light); border-style: solid; border-color: var(--accent); }
+
+.day-notes { width: 100%; margin-top: 10px; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg); color: var(--text); resize: none; min-height: 60px; line-height: 1.5; }
+.day-notes:focus { outline: none; border-color: var(--accent); background: var(--surface); }
+.day-notes::placeholder { color: var(--text3); }
+
+.bottom-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; padding: 10px 20px; border-radius: var(--r); opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 600px) {
+  .header h1 { font-size: 2rem; }
+  .pct-big { font-size: 2rem; min-width: 60px; }
+  .days-grid { grid-template-columns: 1fr; }
+  .task-actions { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>Mi semana integral</h1>
+    <p>Objetivos 2026 — marca tareas, deja notas y conversa con la IA sobre tu avance.</p>
+  </div>
+
+  <div class="top-bar">
+    <input class="week-input" id="weekName" value="Semana del ____ al ____" />
+    <button class="btn" onclick="exportData()">↓ Guardar JSON</button>
+    <button class="btn" onclick="document.getElementById('importFile').click()">↑ Cargar JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)" />
+  </div>
+
+  <div class="progress-card">
+    <div class="pct-big" id="pct">0%</div>
+    <div class="bar-section">
+      <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+      <div class="bar-label" id="barLabel">0 de 0 tareas completadas esta semana</div>
+    </div>
+  </div>
+
+  <div class="area-grid" id="areaGrid"></div>
+
+  <div class="ai-panel">
+    <div class="ai-title">✦ Feedback con IA</div>
+    <div class="quick-btns">
+      <button class="qbtn" onclick="quickAsk('¿Cómo voy esta semana? Dame un análisis honesto de mi progreso.')">¿Cómo voy?</button>
+      <button class="qbtn" onclick="quickAsk('¿Qué área estoy descuidando más esta semana?')">Áreas débiles</button>
+      <button class="qbtn" onclick="quickAsk('Dame motivación para terminar la semana fuerte.')">Motivación</button>
+      <button class="qbtn" onclick="quickAsk('¿Qué ajustes me sugieres para la próxima semana?')">Sugerencias</button>
+      <button class="qbtn" onclick="quickAsk('Revisa mis notas de la semana y dime qué patrones ves.')">Ver patrones</button>
+    </div>
+    <div class="chat-history" id="chatHistory"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Pregúntale algo a la IA sobre tu semana..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){sendAI();event.preventDefault();}" />
+      <button class="send-btn" id="sendBtn" onclick="sendAI()">Enviar →</button>
+    </div>
+  </div>
+
+  <div class="days-grid" id="daysGrid"></div>
+
+  <div class="bottom-actions">
+    <button class="btn" onclick="copyText()">⎘ Copiar resumen</button>
+    <button class="btn danger" onclick="resetWeek()">↺ Nueva semana</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const AREAS = ["Deporte","Familia","Libro","Acuarela","Nutrición","Vínculos","Trabajo","Inglés","Personal"];
+
+const DEFAULT_WEEK = [
+  {day:"Lunes",cls:"lun",focus:"Recuperación + orden mental",tasks:[
+    {id:"lun-yoga",label:"Yoga",area:"Deporte"},
+    {id:"lun-activo",label:"Descanso activo o bici suave opcional",area:"Deporte"},
+    {id:"lun-plan",label:"Planificar semana laboral",area:"Trabajo"},
+    {id:"lun-comidas",label:"Organizar comidas de la semana",area:"Nutrición"},
+    {id:"lun-escribir",label:"Escribir 15 minutos",area:"Libro"},
+    {id:"lun-ingles",label:"Inglés speaking 10 minutos",area:"Inglés"},
+    {id:"lun-domingo",label:"20 min juego/conversación con Domingo",area:"Familia"},
+  ]},
+  {day:"Martes",cls:"mar",focus:"Fuerza + productividad",tasks:[
+    {id:"mar-pilates",label:"Pilates",area:"Deporte"},
+    {id:"mar-fuerza",label:"Fuerza piernas + glúteos + core",area:"Deporte"},
+    {id:"mar-trabajo",label:"Bloque profundo de trabajo",area:"Trabajo"},
+    {id:"mar-ingles",label:"Lectura en inglés 10–20 minutos",area:"Inglés"},
+    {id:"mar-escribir",label:"Escritura 15 minutos",area:"Libro"},
+    {id:"mar-nutri",label:"Comida nutritiva consciente",area:"Nutrición"},
+    {id:"mar-domingo",label:"Leer o narrar juego con Domingo",area:"Familia"},
+  ]},
+  {day:"Miércoles",cls:"mie",focus:"Running + conexión",tasks:[
+    {id:"mie-yoga",label:"Yoga",area:"Deporte"},
+    {id:"mie-trote",label:"Trote suave/medio 35–45 min",area:"Deporte"},
+    {id:"mie-podcast",label:"Podcast en inglés durante el trote",area:"Inglés"},
+    {id:"mie-social",label:"Conectar con alguien (mensaje, café o llamada)",area:"Vínculos"},
+    {id:"mie-domingo",label:"20 min conversación con Domingo",area:"Familia"},
+    {id:"mie-nutri",label:"Priorizar proteína + fibra",area:"Nutrición"},
+  ]},
+  {day:"Jueves",cls:"jue",focus:"Estabilidad + creatividad",tasks:[
+    {id:"jue-pilates",label:"Pilates",area:"Deporte"},
+    {id:"jue-fuerza",label:"Fuerza liviana: estabilidad, core, espalda",area:"Deporte"},
+    {id:"jue-acuarela",label:"Acuarela 30–60 minutos",area:"Acuarela"},
+    {id:"jue-ingles",label:"Inglés speaking 10–15 minutos",area:"Inglés"},
+    {id:"jue-libro",label:"Anotar ideas para el libro",area:"Libro"},
+    {id:"jue-domingo",label:"Juego narrado con Domingo",area:"Familia"},
+  ]},
+  {day:"Viernes",cls:"vie",focus:"Regeneración + cierre",tasks:[
+    {id:"vie-yoga",label:"Yoga",area:"Deporte"},
+    {id:"vie-trote",label:"Trote regenerativo 25–35 min",area:"Deporte"},
+    {id:"vie-revision",label:"Revisión semanal: qué funcionó y qué ajustar",area:"Trabajo"},
+    {id:"vie-social",label:"Panorama social o mantener vínculo",area:"Vínculos"},
+    {id:"vie-ingles",label:"Inglés liviano: serie, audio o lectura",area:"Inglés"},
+    {id:"vie-domingo",label:"Lectura con Domingo",area:"Familia"},
+  ]},
+  {day:"Sábado",cls:"sab",focus:"Vida real + descanso",tasks:[
+    {id:"sab-descanso",label:"Descanso o caminata suave",area:"Deporte"},
+    {id:"sab-familia",label:"Tiempo familiar sin presión",area:"Familia"},
+    {id:"sab-social",label:"Panorama social o vínculo importante",area:"Vínculos"},
+    {id:"sab-acuarela",label:"Acuarela opcional",area:"Acuarela"},
+    {id:"sab-ingles",label:"Lectura o contenido en inglés opcional",area:"Inglés"},
+    {id:"sab-nutri",label:"Comer rico, consciente y sin culpa",area:"Nutrición"},
+  ]},
+  {day:"Domingo",cls:"dom",focus:"Fondo largo + visión",tasks:[
+    {id:"dom-fondo",label:"Fondo largo 45–60 min",area:"Deporte"},
+    {id:"dom-recuperar",label:"Buena recuperación: comida + agua + descanso",area:"Nutrición"},
+    {id:"dom-familia",label:"Tiempo familiar presente",area:"Familia"},
+    {id:"dom-plan",label:"Planear semana en 20 minutos",area:"Trabajo"},
+    {id:"dom-gratitud",label:"Anotar avances y gratitud",area:"Personal"},
+    {id:"dom-ingles",label:"Podcast o audio en inglés suave",area:"Inglés"},
+  ]},
+];
+
+let week = JSON.parse(JSON.stringify(DEFAULT_WEEK));
+let checked = {};
+let notes = {};
+let chatHistory = [];
+let isSending = false;
+let editingTaskId = null; // solo una tarea se edita a la vez
+
+function genId() { return 't' + Date.now() + Math.floor(Math.random()*9999); }
+function allTasks() { return week.flatMap(d => d.tasks); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ─ Progress ─ */
+function updateProgress() {
+  const total = allTasks().length;
+  const done = Object.values(checked).filter(Boolean).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('barFill').style.width = pct + '%';
+  document.getElementById('barLabel').textContent = done + ' de ' + total + ' tareas completadas esta semana';
+  buildAreaGrid();
+}
+
+function buildAreaGrid() {
+  const s = {};
+  allTasks().forEach(t => {
+    if (!s[t.area]) s[t.area]={total:0,done:0};
+    s[t.area].total++;
+    if (checked[t.id]) s[t.area].done++;
+  });
+  document.getElementById('areaGrid').innerHTML = Object.entries(s).map(([area,v]) => {
+    const fp = v.total ? Math.round(v.done/v.total*100) : 0;
+    return `<div class="area-card"><div class="area-label">${esc(area)}</div><div class="area-count">${v.done}/${v.total}</div><div class="area-bar"><div class="area-bar-fill" style="width:${fp}%"></div></div></div>`;
+  }).join('');
+}
+
+/* ─ Task actions ─ */
+function toggleTask(tid) {
+  if (editingTaskId) return; // no toggle mientras se edita
+  checked[tid] = !checked[tid];
+  const wrap = document.getElementById('wrap-' + tid);
+  if (wrap) {
+    const task = wrap.querySelector('.task');
+    if (task) {
+      task.classList.toggle('done', checked[tid]);
+      task.querySelector('.task-check').textContent = checked[tid] ? '✓' : '';
+    }
+  }
+  updateProgress();
+}
+
+function startEdit(di, tid) {
+  if (editingTaskId && editingTaskId !== tid) cancelEdit(editingTaskId);
+  editingTaskId = tid;
+  const task = week[di].tasks.find(t => t.id === tid);
+  if (!task) return;
+  const wrap = document.getElementById('wrap-' + tid);
+  if (!wrap) return;
+  const areaOpts = AREAS.map(a => `<option value="${esc(a)}"${a===task.area?' selected':''}>${esc(a)}</option>`).join('');
+  wrap.innerHTML = `
+    <div class="task-editing" id="editing-${tid}">
+      <input class="te-input" id="teinput-${tid}" value="${esc(task.label)}" onkeydown="if(event.key==='Enter')saveEdit(${di},'${tid}');if(event.key==='Escape')cancelEdit('${tid}')" />
+      <div class="te-row">
+        <select class="te-sel" id="tesel-${tid}">${areaOpts}</select>
+        <button class="te-cancel" onclick="cancelEdit('${tid}')">Cancelar</button>
+        <button class="te-save" onclick="saveEdit(${di},'${tid}')">Guardar</button>
+      </div>
+    </div>`;
+  document.getElementById('teinput-' + tid).focus();
+}
+
+function saveEdit(di, tid) {
+  const li = document.getElementById('teinput-' + tid);
+  const si = document.getElementById('tesel-' + tid);
+  if (!li || !si) return;
+  const lv = li.value.trim();
+  if (!lv) { showToast('El nombre no puede estar vacío'); return; }
+  const task = week[di].tasks.find(t => t.id === tid);
+  if (task) { task.label = lv; task.area = si.value; }
+  editingTaskId = null;
+  renderTask(di, tid);
+  updateProgress();
+  showToast('Tarea actualizada');
+}
+
+function cancelEdit(tid) {
+  // find di
+  const di = week.findIndex(d => d.tasks.some(t => t.id === tid));
+  if (di === -1) return;
+  editingTaskId = null;
+  renderTask(di, tid);
+}
+
+function deleteTask(di, tid) {
+  if (!confirm('¿Eliminar esta tarea?')) return;
+  week[di].tasks = week[di].tasks.filter(t => t.id !== tid);
+  delete checked[tid];
+  editingTaskId = null;
+  // remove the wrap element
+  const wrap = document.getElementById('wrap-' + tid);
+  if (wrap) wrap.remove();
+  updateProgress();
+  showToast('Tarea eliminada');
+}
+
+/* Re-render a single task wrap without rebuilding the whole grid */
+function renderTask(di, tid) {
+  const task = week[di].tasks.find(t => t.id === tid);
+  if (!task) return;
+  const wrap = document.getElementById('wrap-' + tid);
+  if (!wrap) return;
+  wrap.innerHTML = buildTaskInner(task, di);
+}
+
+function buildTaskInner(t, di) {
+  return `
+    <div class="task${checked[t.id]?' done':''}" onclick="toggleTask('${t.id}')">
+      <div class="task-check">${checked[t.id]?'✓':''}</div>
+      <div class="task-body">
+        <div class="task-lbl">${esc(t.label)}</div>
+        <div class="task-area">${esc(t.area)}</div>
+      </div>
+    </div>
+    <div class="task-actions">
+      <button class="act-btn edit-t" onclick="event.stopPropagation();startEdit(${di},'${t.id}')" title="Editar">✏</button>
+      <button class="act-btn del-t" onclick="event.stopPropagation();deleteTask(${di},'${t.id}')" title="Eliminar">✕</button>
+    </div>`;
+}
+
+function addTask(di) {
+  const inp = document.getElementById('addinp-' + di);
+  const sel = document.getElementById('addsel-' + di);
+  if (!inp || !sel) return;
+  const lv = inp.value.trim();
+  if (!lv) { showToast('Escribe el nombre de la tarea'); inp.focus(); return; }
+  const newTask = { id: genId(), label: lv, area: sel.value };
+  week[di].tasks.push(newTask);
+  inp.value = '';
+  // insert new task wrap before the add-row
+  const addRow = document.getElementById('addrow-' + di);
+  if (addRow) {
+    const wrap = document.createElement('div');
+    wrap.className = 'task-wrap';
+    wrap.id = 'wrap-' + newTask.id;
+    wrap.innerHTML = buildTaskInner(newTask, di);
+    addRow.parentNode.insertBefore(wrap, addRow);
+  }
+  updateProgress();
+  showToast('Tarea agregada');
+  inp.focus();
+}
+
+/* ─ Build full days grid ─ */
+function buildDays() {
+  document.getElementById('daysGrid').innerHTML = week.map((day, di) => {
+    const taskRows = day.tasks.map(t => `
+      <div class="task-wrap" id="wrap-${t.id}">
+        ${buildTaskInner(t, di)}
+      </div>`).join('');
+
+    const areaOpts = AREAS.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('');
+
+    return `<div class="day-card ${day.cls}">
+      <div class="day-name">${day.day}</div>
+      <div class="day-focus">${day.focus}</div>
+      ${taskRows}
+      <div class="add-task-row" id="addrow-${di}">
+        <input class="add-task-input" id="addinp-${di}" placeholder="+ Nueva tarea..." onkeydown="if(event.key==='Enter')addTask(${di})" />
+        <button class="add-task-btn" onclick="addTask(${di})">Agregar</button>
+      </div>
+      <textarea class="day-notes" placeholder="Notas de ${day.day}..." onchange="notes['${day.day}']=this.value">${esc(notes[day.day]||'')}</textarea>
+    </div>`;
+  }).join('');
+}
+
+/* ─ AI ─ */
+function getCtx() {
+  const total = allTasks().length;
+  const done = Object.values(checked).filter(Boolean).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const s = {};
+  allTasks().forEach(t => {
+    if (!s[t.area]) s[t.area]={total:0,done:0};
+    s[t.area].total++;
+    if (checked[t.id]) s[t.area].done++;
+  });
+  const areas = Object.entries(s).map(([a,v])=>`${a}: ${v.done}/${v.total}`).join(', ');
+  const ns = Object.entries(notes).filter(([,v])=>v).map(([d,v])=>`${d}: ${v}`).join(' | ');
+  return `${document.getElementById('weekName').value}. Progreso: ${done}/${total} (${pct}%). Por área: ${areas}. Notas: ${ns||'Sin notas aún'}.`;
+}
+
+async function sendAI() {
+  if (isSending) return;
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  isSending = true;
+  input.value = '';
+  document.getElementById('sendBtn').disabled = true;
+  addMsg(msg, 'user');
+  const lid = 'l' + Date.now();
+  addMsg('Analizando tu semana...', 'ai loading', lid);
+  const sys = `Eres una IA de coaching personal amigable, directa y motivadora. Conoces los objetivos 2026 del usuario: correr 21k, mejorar nutrición, acompañar el desarrollo de su hijo Domingo, publicar su primer libro, vender una acuarela, mejorar inglés hablado y leído, construir más vínculos, tener trabajo organizado y automatizado, y construir una vida con más abundancia y libertad. Respondes en español, de forma concisa (máximo 150 palabras), honesta y con energía positiva pero sin ser cursi. Siempre basas tu respuesta en el progreso real del usuario.`;
+  const userContent = `Mi progreso esta semana: ${getCtx()}\n\nMi pregunta: ${msg}`;
+  const msgs = [...chatHistory.filter(m=>m.role).map(m=>({role:m.role,content:m.content})), {role:'user',content:userContent}];
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:msgs})
+    });
+    const data = await r.json();
+    const reply = data.content?.map(b=>b.text||'').join('')||'No pude obtener respuesta.';
+    removeMsg(lid);
+    addMsg(reply, 'ai');
+    chatHistory.push({role:'user',content:userContent},{role:'assistant',content:reply});
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+  } catch {
+    removeMsg(lid);
+    addMsg('Error de conexión. Intenta de nuevo.', 'ai');
+  }
+  isSending = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function quickAsk(msg) { document.getElementById('chatInput').value = msg; sendAI(); }
+
+function addMsg(text, cls, id) {
+  const h = document.getElementById('chatHistory');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + cls;
+  div.textContent = text;
+  if (id) div.dataset.id = id;
+  h.appendChild(div);
+  h.scrollTop = h.scrollHeight;
+}
+function removeMsg(id) {
+  const el = document.querySelector(`[data-id="${id}"]`);
+  if (el) el.remove();
+}
+
+/* ─ Import / Export ─ */
+function exportData() {
+  const data = {weekName:document.getElementById('weekName').value, week, checked, notes, exportedAt:new Date().toISOString()};
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download = 'semana-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('Semana guardada');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.week) week = data.week;
+      checked = data.checked || {};
+      notes = data.notes || {};
+      if (data.weekName) document.getElementById('weekName').value = data.weekName;
+      editingTaskId = null;
+      buildDays(); updateProgress();
+      showToast('Semana cargada');
+    } catch { showToast('Archivo no válido'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function copyText() {
+  const total = allTasks().length;
+  const done = Object.values(checked).filter(Boolean).length;
+  const s = {};
+  allTasks().forEach(t => {
+    if (!s[t.area]) s[t.area]={total:0,done:0};
+    s[t.area].total++;
+    if (checked[t.id]) s[t.area].done++;
+  });
+  const lines = [
+    `Resumen: ${document.getElementById('weekName').value}`,
+    `Total: ${done}/${total} (${Math.round(done/total*100)}%)`, '',
+    ...Object.entries(s).map(([a,v])=>`${a}: ${v.done}/${v.total}`),
+    '','Notas:',
+    ...Object.entries(notes).filter(([,v])=>v).map(([d,v])=>`${d}: ${v}`)
+  ];
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>showToast('Resumen copiado'));
+}
+
+function resetWeek() {
+  if (!confirm('¿Empezar nueva semana? Guarda antes si quieres conservar los datos actuales.')) return;
+  week = JSON.parse(JSON.stringify(DEFAULT_WEEK));
+  checked = {}; notes = {}; chatHistory = []; editingTaskId = null;
+  document.getElementById('chatHistory').innerHTML = '';
+  document.getElementById('weekName').value = 'Semana del ____ al ____';
+  buildDays(); updateProgress();
+  showToast('Nueva semana iniciada');
+}
+
+buildDays();
+updateProgress();
+</script>
+</body>
+</html>
